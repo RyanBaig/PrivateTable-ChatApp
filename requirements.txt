@@ -3,3 +3,4 @@ python_socketio
 flask
 eventlet
 cefpython3
+appwrite

@@ -6,7 +6,9 @@ from flask import Flask, render_template, send_from_directory
 import eventlet
 from datetime import datetime
 import time
+from webview.platforms.cef import browser_settings, settings
 import json
+from datetime import timedelta
 from appwrite.client import Client
 from appwrite.services.databases import Databases
 from appwrite.id import ID as id_class
@@ -30,6 +32,17 @@ database = Databases(client)
 
 # Add message dict
 messages = {}
+
+# This part is to check if any message is older than 90 days, then deletes it.
+def delete_old_msgs():
+    # Get all documents in the 'chat-msgs-collection' collection
+    response = database.list_documents('chat-msgs', 'chat-msgs-collection')
+
+    for document in response['documents']:
+        timestamp = datetime.strptime(document['timestamp'], '%d %b, %Y • %I:%M:%S')
+    if datetime.now() - timestamp > timedelta(days=90):
+        # If the message is older than 90 days, delete it
+        database.delete_document('chat-msgs', 'chat-msgs-collection', document['$id'])
 
 # Serve the index.html file for the chat app
 @app.route('/')
@@ -55,19 +68,20 @@ def disconnect(sid):
 
 @sio.event
 def chat_message(sid, data):
-    timestamp = datetime.now().strftime('%d %b, %Y • %I:%M:%S')
-    if data == "" or None:
-        pass
-    else:
-        print(data)
-        message = {'timestamp': timestamp, 'data': data}
-        messages.setdefault(sid, []).append(message)
+   timestamp = datetime.now().strftime('%d %b, %Y • %I:%M:%S')
+   if data == "" or None:
+       pass
+   else:
+       print(data)
+       message = {'timestamp': timestamp, 'data': data}
+       messages.setdefault(sid, []).append(message)
 
-        # Store the message in AppWrite
-        document = database.create_document('chat-msgs','chat-msgs-collection', id_class.unique(), {'timestamp': timestamp, 'message': data})
+       # Store the message in AppWrite
+       document = database.create_document('chat-msgs','chat-msgs-collection', id_class.unique(), {'timestamp': timestamp, 'message': data})
 
-        sio.send(sid, "Message received by server: " + data)
-        sio.emit('message', json.dumps({'timestamp': timestamp, 'data': data}), room=sid)
+       sio.send(sid, "Message received by server: " + data)
+       sio.emit('message', json.dumps({'timestamp': timestamp, 'data': data}))
+
 
 
 
@@ -82,6 +96,7 @@ def run_flask():
 
 
 def startup():
+    delete_old_msgs()
     # Start Flask app in a subprocess
     flask_process = subprocess.Popen(['python', 'script.py', 'run_flask'])
 
@@ -96,9 +111,11 @@ def startup():
         flask_process.terminate()
 
     # Schedule the on_closing function to be called when the webview window is closed
-    os.environ["PYWEBVIEW_GUI"] = "cef"
+    # Update the settings as needed
+    settings.update({'persist_session_cookies': True})
+    browser_settings.update({'dom_paste_disabled': False})
     webview.create_window('PrivateTable Chatroom', 'http://localhost:5000')
-    webview.start()
+    webview.start(gui="cef")
     
     
 
