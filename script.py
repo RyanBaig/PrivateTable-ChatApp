@@ -1,0 +1,109 @@
+import os
+import subprocess
+import webview
+import socketio
+from flask import Flask, render_template, send_from_directory
+import eventlet
+from datetime import datetime
+import time
+import json
+# from appwrite.client import Client
+# from appwrite.services.databases import Databases
+
+# Create a new Socket.IO server
+sio = socketio.Server()
+
+# Create a new Flask web application
+app = Flask(__name__)
+
+# Attach the Socket.IO server to the Flask application
+app.wsgi_app = socketio.WSGIApp(sio, app.wsgi_app)
+
+# # Initialize the AppWrite client
+# client = Client()
+# client.set_endpoint('https://cloud.appwrite.io/v1')  # Replace with your AppWrite endpoint
+# client.set_project('privatetable-chat')  # Replace with your AppWrite project ID
+# client.set_key('44f3e53186bb0eab5e62a152dc8e8ebe88895ec116539d0b43920427417959dc4c8c5ea5d4e446b64f991e7e9e6bdeb87551dadf4fe1d652038c830d440b1b61782ac5ca32b98c765c5f8eff0de5ebeebbbd42c40b58cce1ff4e2af671fc3ffe6f868fcc4f9e579973800f1fd2e76fe1349df0b852ef4610d74f9115807786c0')  # Replace with your AppWrite API key
+
+# # Get the Database service
+# database = Databases(client)
+
+# Add message dict
+messages = {}
+
+# Serve the index.html file for the chat app
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+# Define event handlers
+@sio.event
+def connect(sid, environ):
+    print(f"Client {sid} connected")
+    send_stored_messages(sid)
+
+
+@sio.event
+def disconnect(sid):
+    print(f"Client {sid} disconnected")
+
+
+@sio.event
+def chat_message(sid, data):
+    timestamp = datetime.now().strftime('%d %b, %Y • %I:%M:%S')
+    if data == "" or None:
+        pass
+    else:
+        print(data)
+        message = {'timestamp': timestamp, 'data': data}
+        messages.setdefault(sid, []).append(message)
+
+        # # Store the message in AppWrite
+        # document = database.create_document('chat-msgs-collection', {'timestamp': timestamp, 'message': data})
+
+        sio.send(sid, "Message received by server: " + data)
+        sio.emit('message', json.dumps({'timestamp': timestamp, 'data': data}), room=sid)
+
+
+
+def send_stored_messages(sid):
+    stored_messages = messages.get(sid, [])
+    for message in stored_messages:
+        sio.emit('message', json.dumps(message), room=sid)
+
+
+def run_flask():
+    eventlet.wsgi.server(eventlet.listen(('127.0.0.1', 5000)), app)
+
+
+def startup():
+    # Start Flask app in a subprocess
+    flask_process = subprocess.Popen(['python', 'script.py', 'run_flask'])
+
+    def on_closing():
+        # Inform the server that the window is closing
+        socketio.emit('window_closing')
+
+        # Allow some time for the server to handle the event
+        time.sleep(1)
+
+        # Terminate the Flask process
+        flask_process.terminate()
+
+    # Schedule the on_closing function to be called when the webview window is closed
+    os.environ["PYWEBVIEW_GUI"] = "cef"
+    webview.create_window('PrivateTable Chatroom', 'http://localhost:5000')
+    webview.start()
+    
+    
+
+
+
+if __name__ == '__main__':
+    import sys
+
+    if len(sys.argv) > 1 and sys.argv[1] == 'run_flask':
+        run_flask()
+    else:
+        startup()
