@@ -1,91 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Socket.IO chat</title>
-  <style>
-    body {
-    margin: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f5f5f5;
-    }
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO chat</title>
+    <link rel="stylesheet" href="/css">
+  </head>
 
-    #form {
-    background: rgba(0, 0, 0, 0.1);;
-    padding: 1rem;
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    display: flex;
-    align-items: center;
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
-    }
+  <body>
+    <ul id="messages"></ul>
+    <form id="form" action="">
+      <input id="m" autocomplete="off" placeholder="Type a message..." /><button>Send</button>
+    </form>
 
-    #m {
-    border: none;
-    padding: 0.5rem;
-    flex-grow: 1;
-    border-radius: 0.25rem;
-    margin: 0.25rem;
-    transition: background-color 0.3s ease-in-out;
-    background-color: #f0f0f0;
-    }
-
-    #m:focus {
-    outline: none;
-    background-color: #e0e0e0;
-    }
-
-    #form>button {
-    background: #333;
-    border: none;
-    padding: 0.5rem 1rem;
-    margin: 0.25rem;
-    border-radius: 0.25rem;
-    outline: none;
-    color: #fff;
-    cursor: pointer;
-    transition: background-color 0.3s ease-in-out;
-    }
-
-    #form>button:hover {
-    background: #555;
-    }
-
-    #messages {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    }
-
-    #messages>li {
-    padding: 1rem;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    background-color: #fff;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    #messages>li:nth-child(odd) {
-    background: #f0f0f0;
-    }
-
-  </style>
-</head>
-
-<body>
-  <ul id="messages"></ul>
-  <form id="form" action="">
-    <input id="m" autocomplete="off" placeholder="Type a message..." /><button>Send</button>
-  </form>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-  <!-- <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.1"></script> -->
-  <script type="module">
-    // import "https://cdn.jsdelivr.net/npm/appwrite@13.0.1";
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.1"></script> -->
+    <script type="module">
     // Function to add a message to the list with timestamp
     function addMessage(message) {
       var messagesList = document.getElementById('messages');
@@ -97,9 +29,9 @@
       timestamp.classList.add('timestamp');
       var timestampText = document.createTextNode(message.timestamp);
       timestamp.appendChild(timestampText);
-
+      // Add styling to timestamp
+      timestamp.style.cssText = 'text-align: right; float: right;';
       messageItem.appendChild(messageText);
-      messageItem.appendChild(document.createElement('br')); // Add a line break
       messageItem.appendChild(timestamp);
 
       messagesList.appendChild(messageItem);
@@ -108,15 +40,15 @@
     var socket = io();
 
     // // Initialize the AppWrite client
-    // const client = new appwrite.Client();
+    // const client = new Appwrite.Client();
 
 
-    // client
-    //   .setEndpoint('https://cloud.appwrite.io/v1') // Your Appwrite Endpoint
-    //   .setProject('privatetable-chat') // Your project ID
-    // ;
+    // client.setEndpoint('https://cloud.appwrite.io/v1'); // Your Appwrite Endpoint
+    // client.setProject('privatetable-chat'); // Your project ID
+   
+
     // // Initialize Database service
-    // const database = appwrite.Database(client, "chat-msgs");
+    // const database = new Appwrite.Databases(client, "chat-msgs");
 
 
     // Event listener for form submission
@@ -156,6 +88,6 @@
     // // Call fetchMessages when the page loads to load existing messages
     // fetchMessages();
   </script>
-</body>
+  </body>
 
 </html>

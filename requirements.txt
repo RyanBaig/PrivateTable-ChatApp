@@ -1,0 +1,5 @@
+pywebview
+python_socketio
+flask
+eventlet
+cefpython3

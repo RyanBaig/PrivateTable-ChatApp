@@ -1,0 +1,78 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+}
+
+#form {
+    background: #fff;
+    padding: 1rem;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#m {
+    border: none;
+    padding: 0.5rem;
+    flex-grow: 1;
+    border-radius: 0.25rem;
+    margin: 0.25rem;
+    transition: background-color 0.3s ease-in-out;
+    background-color: #e0e0e0;
+    /* Light gray tint without transparency */
+}
+
+#m:focus {
+    outline: none;
+    background-color: #d0d0d0;
+    /* Slightly darker gray on focus */
+}
+
+#form>button {
+    background: #333;
+    border: none;
+    padding: 0.5rem 1rem;
+    margin: 0.25rem;
+    border-radius: 0.25rem;
+    outline: none;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+#form>button:hover {
+    background: #555;
+}
+
+#messages {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#messages>li {
+    padding: 1rem;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#messages>li:nth-child(odd) {
+    background: #e0e0e0;
+    /* Light gray tint for odd messages */
+}
+
+.timestamp {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.5)
+}
+
+.message-item {
+    font-size: 16px;
+}

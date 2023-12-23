@@ -36,6 +36,10 @@ messages = {}
 def index():
     return render_template('index.html')
 
+@app.route('/css')
+def css():
+    return send_from_directory("./templates/css", "styles.css")
+
 
 # Define event handlers
 @sio.event
