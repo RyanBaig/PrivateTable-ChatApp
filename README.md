@@ -90,6 +90,8 @@ Distributed under the MIT License. See [LICENSE](https://github.com/RyanBaig/Pri
 
 ## Authors
 
+<table>
 <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://ryanthedev.vercel.app"><img src="https://avatars.githubusercontent.com/u/86055075?s=48&v=4" width="100px;" alt="Yoon Hyeseong"/><br /><sub><b style="text-align:center;">Ryan Baig</b></sub></a><br /></td>
-    </tr>
+</tr>
+</table>
