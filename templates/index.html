@@ -1,23 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Socket.IO chat</title>
-    <link rel="stylesheet" href="/css">
-  </head>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Socket.IO chat</title>
+  <link rel="stylesheet" href="/css">
+</head>
 
-  <body>
-    <ul id="messages"></ul>
-    <form id="form" action="">
-      <input id="m" autocomplete="off" placeholder="Type a message..." /><button>Send</button>
-    </form>
+<body>
+  <ul id="messages"></ul>
+  <form id="form" action="">
+    <input id="m" autocomplete="off" placeholder="Type a message..." /><button>Send</button>
+  </form>
 
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
-    <!-- <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.1"></script> -->
-    <script type="module">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.1"></script>
+  <script type="module">
     // Function to add a message to the list with timestamp
     function addMessage(message) {
       var messagesList = document.getElementById('messages');
@@ -39,16 +38,16 @@
 
     var socket = io();
 
-    // // Initialize the AppWrite client
-    // const client = new Appwrite.Client();
+    // Initialize the AppWrite client
+    const client = new Appwrite.Client();
 
 
-    // client.setEndpoint('https://cloud.appwrite.io/v1'); // Your Appwrite Endpoint
-    // client.setProject('privatetable-chat'); // Your project ID
-   
+    client.setEndpoint('https://cloud.appwrite.io/v1'); // Your Appwrite Endpoint
+    client.setProject('privatetable-chat'); // Your project ID
 
-    // // Initialize Database service
-    // const database = new Appwrite.Databases(client, "chat-msgs");
+
+    // Initialize Database service
+    const database = new Appwrite.Databases(client, "chat-msgs");
 
 
     // Event listener for form submission
@@ -64,30 +63,30 @@
       addMessage(JSON.parse(message));
     });
 
-    // // Function to fetch messages from AppWrite
-    // function fetchMessages() {
-    //   // const response = database.listDocuments("chat-msgs-collection", )
-    //     // .then(function () {
-    //       // console.log(response)
-    //       var messagesList = document.getElementById('messages');
-    //       messagesList.innerHTML = ''; // Clear existing messages
+    // Function to fetch messages from AppWrite
+    function fetchMessages() {
+      database.listDocuments("chat-msgs", "chat-msgs-collection")
+        .then(function (response) {
+          console.log(response)
+          var messagesList = document.getElementById('messages');
+          messagesList.innerHTML = ''; // Clear existing messages
 
-    //       // Add each message to the list
-    //       // response.documents.forEach(function (document) {
-    //         addMessage({
-    //           timestamp: timestamp,
-    //           data: message
-    //         });
-    //       // });
-    //     // })
-    //     // .catch(function (error) {
-    //     //   console.error('Error fetching messages from Cloud: ', error);
-    //     // });
-    // }
+          // Add each message to the list
+          response.documents.forEach(function (document) {
+            addMessage({
+              timestamp: timestamp,
+              data: message
+            });
+          });
+        })
+        .catch(function (error) {
+          console.error('Error fetching messages from Cloud: ', error);
+        });
+    }
 
-    // // Call fetchMessages when the page loads to load existing messages
-    // fetchMessages();
+    // Call fetchMessages when the page loads to load existing messages
+    fetchMessages();
   </script>
-  </body>
+</body>
 
 </html>
