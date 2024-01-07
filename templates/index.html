@@ -10,6 +10,7 @@
 
 <body>
   <ul id="messages"></ul>
+
   <form id="form" action="">
     <input id="m" autocomplete="off" placeholder="Type a message..." /><button>Send</button>
   </form>
@@ -17,24 +18,50 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.1"></script>
   <script type="module">
-    // Function to add a message to the list with timestamp
+    // Helper function to split the message into chunks of 120 characters
+    function splitIntoChunks(str, len) {
+      var regex = new RegExp('.{' + len + '}|.{1,' + Number(len - 1) + '}', 'g');
+      return str.match(regex);
+    }
+
     function addMessage(message) {
       var messagesList = document.getElementById('messages');
       var messageItem = document.createElement('li');
       messageItem.classList.add('message-item');
 
-      var messageText = document.createTextNode(message.data);
+      // Split the message into chunks of 120 characters
+      var messageChunks = splitIntoChunks(message.data, 120);
+
+      // Create a div for each chunk of message
+      messageChunks.forEach(chunk => {
+        var messageDiv = document.createElement('div');
+        messageDiv.style.cssText = 'word-wrap: break-word; display: flex;';
+
+        // Create a span for each line of the chunk
+        chunk.split('\n').forEach(line => {
+          var lineDiv = document.createElement('div');
+          var messageText = document.createTextNode(line);
+          lineDiv.appendChild(messageText);
+          messageDiv.appendChild(lineDiv);
+        });
+
+        messageItem.appendChild(messageDiv);
+      });
+
       var timestamp = document.createElement('span');
       timestamp.classList.add('timestamp');
+      timestamp.style.cssText = 'text-align: right;';
+
       var timestampText = document.createTextNode(message.timestamp);
       timestamp.appendChild(timestampText);
-      // Add styling to timestamp
-      timestamp.style.cssText = 'text-align: right; float: right;';
-      messageItem.appendChild(messageText);
+
       messageItem.appendChild(timestamp);
 
       messagesList.appendChild(messageItem);
     }
+
+
+
 
     var socket = io();
 
@@ -67,15 +94,18 @@
     function fetchMessages() {
       database.listDocuments("chat-msgs", "chat-msgs-collection")
         .then(function (response) {
-          console.log(response)
+          console.log(response);
           var messagesList = document.getElementById('messages');
           messagesList.innerHTML = ''; // Clear existing messages
 
           // Add each message to the list
           response.documents.forEach(function (document) {
+            var timestamp = document.timestamp; // Assuming timestamp is a property of the document
+            var messageContent = document.message; // Replace with the actual property name
+
             addMessage({
               timestamp: timestamp,
-              data: message
+              data: messageContent
             });
           });
         })
@@ -83,6 +113,10 @@
           console.error('Error fetching messages from Cloud: ', error);
         });
     }
+
+
+
+
 
     // Call fetchMessages when the page loads to load existing messages
     fetchMessages();

@@ -9,7 +9,7 @@ import time
 import json
 from appwrite.client import Client
 from appwrite.services.databases import Databases
-import uuid
+from appwrite.id import ID as id_class
 
 # Create a new Socket.IO server
 sio = socketio.Server()
@@ -64,7 +64,7 @@ def chat_message(sid, data):
         messages.setdefault(sid, []).append(message)
 
         # Store the message in AppWrite
-        document = database.create_document('chat-msgs','chat-msgs-collection', str(uuid.uuid4()), {'timestamp': timestamp, 'message': data})
+        document = database.create_document('chat-msgs','chat-msgs-collection', id_class.unique(), {'timestamp': timestamp, 'message': data})
 
         sio.send(sid, "Message received by server: " + data)
         sio.emit('message', json.dumps({'timestamp': timestamp, 'data': data}), room=sid)
