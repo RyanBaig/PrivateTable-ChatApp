@@ -1,5 +1,4 @@
 [app]
-[buildozer]
 
 # (str) Title of your application
 title = PrivateTable
@@ -14,6 +13,7 @@ package.domain = com.ryanbaig.privatetable
 
 # (str) Source code where the main.py live
 source.dir = .
+[buildozer]
 
 # (list) Source files to include (let empty to include all the files)
 source.include_exts = py,png,jpg,kv,atlas
