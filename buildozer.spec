@@ -3,6 +3,8 @@
 # (str) Title of your application
 title = PrivateTable
 
+version = 1.0
+
 # (str) Package name
 package.name = private-table
 
