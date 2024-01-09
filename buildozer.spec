@@ -1,4 +1,5 @@
 [app]
+[buildozer]
 
 # (str) Title of your application
 title = PrivateTable
