@@ -10,3 +10,5 @@ source.include_exts = py,png,jpg,kv,atlas
 requirements = python3,appwrite,python_socketio,flask,eventlet,cefpython3,pywebview
 orientation = portrait
 fullscreen = 0
+
+log level = 2
