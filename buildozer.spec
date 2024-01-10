@@ -11,4 +11,4 @@ requirements = python3,appwrite,python_socketio,flask,eventlet,cefpython3,pywebv
 orientation = portrait
 fullscreen = 0
 
-log level = 2
+log_level = 2
