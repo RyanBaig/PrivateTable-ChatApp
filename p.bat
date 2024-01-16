@@ -1,2 +1,2 @@
 @echo off
-python %*.py
+python main.py %*
